@@ -1,0 +1,207 @@
+h1 {
+    text-align: center;
+    font-size: 4rem;
+    font-weight: 600;
+    margin-bottom: 0;
+}
+
+body {
+    margin: 0px;
+    background-color: #fafafa;
+}
+
+input {
+    font-size: 1.1rem;
+    width: 70%;
+    color: #333333;
+    border-radius: 0.1rem;
+    padding: 10px 10px;
+    border: solid 1px #111111;
+}
+input[id="input_bar"] {
+    margin-right: 10px;
+}
+
+button {
+    padding: 0px;
+    font-size: 1.1rem;
+    border-radius: 0.1rem;
+    background-color: #333;
+    color: #fafafa;
+    border: solid 1px #676767;
+    line-height: 2.7rem;
+    height: 2.7rem;
+    vertical-align: middle;
+    padding-left: 9px;
+    padding-right: 9px;
+}
+
+button:hover {
+    cursor: pointer;
+    background-color: #444444;
+}
+
+button.delete_btn {
+    line-height: 2rem;
+    height: 2rem;
+    background-color: #eb4034;
+    border: none;
+}
+
+table {
+    font-size: 1.5rem;
+    border-collapse: collapse;
+}
+
+tr {
+    border-bottom: solid 1px #111111;
+}
+
+tr th,
+tr td {
+    text-align: left;
+    font-size: 1.1rem;
+}
+
+tr td {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+tr th:last-child,
+tr td:last-child {
+    text-align: right;
+}
+
+tr th:nth-child(1),
+tr td:nth-child(1) {
+    padding-left: 1rem;
+    width: 25%;
+}
+
+tr th:nth-child(3),
+tr td:nth-child(3) {
+    padding-right: 1rem;
+    width: 10%;
+}
+
+td button:hover {
+    background-color: tomato;
+}
+
+ul {
+    list-style-type: none;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#header {
+    /* padding-top: 0.5rem;
+    padding-bottom: 0.5rem; */
+    background-color: #333;
+    background-color: #f4b400;
+    backdrop-filter: saturate(180%) blur(20px);
+}
+
+li {
+    float: left;
+}
+
+li button,
+li p,
+li input {
+    font-size: 20px;
+    display: block;
+    color: white;
+    color: #333;
+    background: transparent;
+    border: none;
+    text-align: center;
+    margin: 17px 0px;
+    padding-left: 16px;
+    padding-right: 16px;
+}
+
+li:last-child {
+    margin-left: auto;
+}
+
+li input {
+    border-radius: 0.1rem;
+    padding: 7px 10px;
+    text-align: left;
+    background-color: #676767;
+    border: solid 1px #676767;
+    backdrop-filter: saturate(180%) blur(20px);
+}
+
+li img {
+    vertical-align: middle;
+    width: 25px;
+    margin: 0px;
+}
+
+input:focus,
+button:focus {
+    outline: #eb4034;
+    /* border: #eb4034 1px solid; */
+}
+
+li input::placeholder {
+    color: #c6c6c6;
+}
+
+li button:hover {
+    cursor: pointer;
+    color: #bfbfbf;
+}
+
+section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding-left: 17rem;
+    padding-right: 17rem;
+    margin-bottom: 3rem;
+}
+
+.container > * {
+    flex-grow: 1;
+}
+
+/* Ripple effect */
+.ripple {
+    background-position: center;
+    transition: background 0.8s;
+}
+.ripple:hover {
+    background: #555555 radial-gradient(circle, transparent 1%, #555555 1%)
+        center/15000%;
+}
+.ripple:active {
+    background-color: #777777;
+    background-size: 100%;
+    transition: background 0s;
+}
+
+/* Button style */
+button {
+    border: none;
+    cursor: pointer;
+    color: white;
+}
+
+* {
+    font-family: "Consolas";
+    font-weight: 400;
+}
