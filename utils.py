@@ -25,7 +25,7 @@ def AESEncrypt(data,key):
 	except Exception as e:
 		print("[utils.py error]AESEncrypt error")
 		print(str(e))
-	return json.dumps(result)
+	return result
 
 def AESDecrypt(cipher,key,IV):
 	try:
