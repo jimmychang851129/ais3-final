@@ -9,6 +9,7 @@ import math,json
 #################################
 # key: length 16
 # IV: length 16
+# data: pad to 16
 def AESEncrypt(data,key):
 	result = {
 		"cipher":"",
@@ -44,11 +45,21 @@ def writelog(data):
 		else:
 			fw.write(data+"\n")
 
-def HashChainInit():
+#####################
+# register new user #
+#####################
+# for demonstration, we implement it online
+def HashChainInit(username):
 	key = os.urandom(cm.hashkeyLength)
 	l = []
+	jwtToken = dict(cm.staffjwtFormat)
+	jwtToken['username'] = username
+	jwtToken['supersecretKey'] = key.hex()
 	hashf = SHA256.new()
 	for i in range(cm.hashchainLength):
 		hashf.update(key)
 		l.append(hashf.hexdigest())
-	return ','.join([x for x in l])
+	result = ','.join([x for x in l])
+	with open(cm.keychainfile,'a+') as fw:
+		fw.write(username+','+result+"\n")
+	return jwtToken
