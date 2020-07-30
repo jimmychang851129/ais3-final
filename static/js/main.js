@@ -45,7 +45,6 @@ function hex2a(hexx) {
 
 $(function () {
     $("#submit_btn").on("click", function (event) {
-        console.log("AJAX");
         $.ajax({
             type: "POST",
             url: "/HMIquery",
@@ -57,6 +56,22 @@ $(function () {
                 console.log(data);
             },
         });
-        return false;
+    });
+    $("#username_btn").on("click", function (event) {
+        $.ajax({
+            type: "POST",
+            url: "/genhashchain",
+            async: false,
+            data: {
+                username: $("#input_username").val(),
+            },
+            success: function (data) {
+                document.cookie = "cntDay={0}".format(data.cntDay);
+                document.cookie = "supersecretKey={0}".format(
+                    data.supersecretKey
+                );
+                document.cookie = "username={0}".format(data.username);
+            },
+        });
     });
 });
