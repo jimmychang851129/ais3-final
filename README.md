@@ -8,6 +8,13 @@ For example, an attacker can easily retrieve all possible information of the OT 
 
 ## Solution
 
+### Assumption
+
+1. one-wayness and weak collision resistence of cryptographic hash function
+2. the origin key of hashchain is randomly generated and not known to anyone
+
+### Details
+
 Authentication layer(Auth) between PLC and HMI
 
 - AES encryption on PLC response based on key in hash chain
@@ -26,6 +33,60 @@ python3.6
 ```
 $ pip install -r requirements.txt
 $ python3 app.py
+```
+occupy port: 5000
+
+## Spec
+
+### HMI
+
+- index.html
+	- selection: 
+		- Increase, Decrease, Report Water level, Report SystemInfo
+	- jwt token generate button
+	- Input:
+		- input water level
+		- input userkey
+	- output:
+		- output block(system Info)
+- function
+	- AES encryption/decryption(brix/CryptoJS)
+
+### Auth
+
+- AES encrypt/decrypt
+- jwt token, hashchain generation
+- jwt token, hashchain validation
+
+### PLC
+
+- modbusutil.py implementation
+	- implement request, response function, and webserver along with sensor can import these function
+
+### sensor
+
+- api
+	- water level report
+	- Increase water level
+	- Decrease water level
+	- System Info report
+
+### Conenction spec
+
+#### Web & Auth
+
+```
+web -> Auth
+{
+	command: increase/decrease/report...
+	jwt token: .....
+}
+
+Auth -> Web
+{
+	msg: encrypted msg,IV
+}
+
 ```
 
 ## links
