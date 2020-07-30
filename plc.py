@@ -29,12 +29,15 @@ class PLC:
                              16: self.writeMultipleRegisters,}
 
     async def handleConnection(self, reader, writer):
-        while True:
-            functionCode = await reader.read(1)
-            retData = await self.functionDict.get(functionCode[0], lambda x : None)(reader)
-            if retData:
-                writer.write(functionCode + retData)
-                await writer.drain()
+        try:
+            while True:
+                functionCode = await reader.read(1)
+                retData = await self.functionDict.get(functionCode[0], lambda x : None)(reader)
+                if retData:
+                    writer.write(functionCode + retData)
+                    await writer.drain()
+        except:
+            return
 
     async def listen(self):
         server = await asyncio.start_server(self.handleConnection, self.host, self.port)
