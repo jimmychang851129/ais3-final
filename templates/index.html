@@ -6,7 +6,7 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/png" href="https://ais3.org/img/AIS3_favicon.png">
     <title>AIS3 2020 Final</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }} />
 </head>
 
 <body>
@@ -31,9 +31,9 @@
             <h1>TITLE</h1>
         </div>
 
-        <form action="" method="POST">
+        <form action="/HMIquery" method="POST">
             <div class="container">
-                <input id="input_bar" type="text" placeholder="Type something ヽ(✿ﾟ▽ﾟ)ノ" />
+                <input id="input_bar" type="text" username= placeholder="Type something ヽ(✿ﾟ▽ﾟ)ノ" />
                 <button id="submit_btn" class="ripple">Send</button>
             </div>
 
@@ -44,7 +44,8 @@
     </section>
 
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
-    <script src="main.js"></script>
+    <script src={{ url_for('static', filename='js/main.js') }}></script>
+    <!-- <script src="main.js"></script> -->
 </body>
 
 </html>
