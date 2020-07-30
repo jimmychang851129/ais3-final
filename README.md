@@ -91,5 +91,5 @@ Auth -> Web
 
 ## links
 
-[hackmd notes](https://hackmd.io/d_7YG7d2Tl6sjiXiLwNESQ)
-[ppt]
+[hackmd notes](https://hackmd.io/d_7YG7d2Tl6sjiXiLwNESQ)<br />
+[ppt](https://docs.google.com/presentation/d/1Lp4p2NCG6AH4-R9yj36697sNSJoR2tYT8QVPy-KXjic/edit?usp=sharing)
