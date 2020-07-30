@@ -66,6 +66,7 @@ $(function () {
                 username: $("#input_username").val(),
             },
             success: function (data) {
+                $("#username").text(": {0}".format(data.username));
                 document.cookie = "cntDay={0}".format(data.cntDay);
                 document.cookie = "supersecretKey={0}".format(
                     data.supersecretKey
