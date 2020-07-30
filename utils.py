@@ -44,10 +44,11 @@ def writelog(data):
 		else:
 			fw.write(data+"\n")
 
-def HashChainInit(key):
+def HashChainInit():
+	key = os.urandom(cm.hashkeyLength)
 	l = []
 	hashf = SHA256.new()
 	for i in range(cm.hashchainLength):
-		hashf.update(key.encode())
+		hashf.update(key)
 		l.append(hashf.hexdigest())
-	return l
+	return ','.join([x for x in l])

@@ -57,6 +57,7 @@ occupy port: 5000
 - AES encrypt/decrypt
 - jwt token, hashchain generation
 - jwt token, hashchain validation
+- command whitelist
 
 ### PLC
 
@@ -76,15 +77,27 @@ occupy port: 5000
 #### Web & Auth
 
 ```
-web -> Auth
+Command: web -> Auth
 {
+	Request: /HMIquery
 	command: increase/decrease/report...
 	jwt token: .....
 }
 
-Auth -> Web
+Command Response: Auth -> Web
 {
 	msg: encrypted msg,IV
+}
+
+Generate HashChain: Web -> Auth
+{
+	Request: /genhashchain
+	Simply a requests
+}
+
+Return HashChain: Auth -> Web
+{
+	return hash chain in string format
 }
 
 ```
