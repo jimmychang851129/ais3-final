@@ -19,7 +19,7 @@ def handleHMIRequest():
 
 @app.route('/genhashchain',methods=['POST','GET'])
 def genhashchain():
-	return utils.HashChainInit()
+	return utils.HashChainInit(request.form.get('username'))
 
 if __name__ == '__main__':
     app.run(port=cm.PORT, debug=True)
