@@ -1,10 +1,17 @@
 from typing import List, Callable, Any
 
-def int2bytes(x: int) -> bytes:
-    return x.to_bytes((x.bit_length() + 7) // 8, 'big')
+def int2bytes(x: int, length=None) -> bytes:
+    length = (x.bit_length() + 7) // 8 if length is None else length
+    return x.to_bytes(length, 'big')
 
 def bytes2int(xbytes: bytes) -> int:
     return int.from_bytes(xbytes, 'big')
+
+def compressBools(x: List[int]) -> bytes:
+    return int2bytes(int(''.join(map(str, x[::-1])), 2), (len(x) + 7) // 8)[::-1]
+
+def decompressBools(x: bytes) -> List[int]:
+    return list(map(int, bin(bytes2int(x[::-1]))[2:]))[::-1]
 
 def modbusSend(functionCode: int, dataRequest: bytes, send: Callable[[bytes], Any]) -> Any:
     # if not 1 <= functionCode <= 127:
@@ -34,8 +41,11 @@ def writeSingleCoil(outputAddress: int, outputValue: int) -> None:
 def writeSingleRegister(registerAddress: int, registerValue : int) -> None:
     modbusSend(6, int2bytes(registerAddress) + int2bytes(registerValue))
 
-def writeMultipleCoils(startingAddress: int, quantityOfOutputs: int, byteCount: int, outputValue: List[int]) -> None:
-    modbusSend(15, int2bytes(startingAddress) + int2bytes(quantityOfOutputs) + int2bytes(byteCount) + b''.join(map(int2bytes, outputValue)))
+def writeMultipleCoils(startingAddress: int, outputValue: List[int]) -> None:
+    quantityOfOutputs = len(outputValue)
+    compressedOutputValue = compressBools(outputValue)
+    modbusSend(15, int2bytes(startingAddress) + int2bytes(quantityOfOutputs) + int2bytes(len(compressedOutputValue)) + compressedOutputValue)
 
-def writeMultipleRegisters(startingAddress: int, quantityOfRegisters: int, byteCount: int, registersValue: List[int]) -> None:
-    modbusSend(16, int2bytes(startingAddress) + int2bytes(quantityOfRegisters) + int2bytes(byteCount) + b''.join(map(int2bytes, registersValue)))
+def writeMultipleRegisters(startingAddress: int, registersValue: List[int]) -> None:
+    quantityOfRegisters = len(registerValue)
+    modbusSend(16, int2bytes(startingAddress) + int2bytes(quantityOfRegisters) + int2bytes(quantityOfRegisters * 2) + b''.join(map(lambda x : x.to_bytes(2, 'big'), registersValue)))
