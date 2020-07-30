@@ -19,7 +19,7 @@ input {
     border: solid 1px #111111;
 }
 
-input[id="input_bar"] {
+.mr {
     margin-right: 10px;
 }
 
@@ -167,13 +167,22 @@ section {
     justify-content: center;
 }
 
+.title,
 .container {
     display: flex;
     flex-direction: row;
-    justify-content: center;
     padding-left: 17rem;
     padding-right: 17rem;
     margin: 0;
+}
+
+.title span {
+    margin-left: 3px;
+    margin-bottom: 1px;
+}
+
+.container {
+    justify-content: center;
     margin-bottom: 3rem;
 }
 
@@ -207,4 +216,5 @@ button {
 * {
     font-family: "Consolas";
     font-weight: 400;
+    /* border: solid 1px green; */
 }
