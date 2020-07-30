@@ -18,6 +18,7 @@ input {
     padding: 10px 10px;
     border: solid 1px #111111;
 }
+
 input[id="input_bar"] {
     margin-right: 10px;
 }
@@ -172,10 +173,11 @@ section {
     justify-content: center;
     padding-left: 17rem;
     padding-right: 17rem;
+    margin: 0;
     margin-bottom: 3rem;
 }
 
-.container > * {
+.container>* {
     flex-grow: 1;
 }
 
@@ -184,10 +186,11 @@ section {
     background-position: center;
     transition: background 0.8s;
 }
+
 .ripple:hover {
-    background: #555555 radial-gradient(circle, transparent 1%, #555555 1%)
-        center/15000%;
+    background: #555555 radial-gradient(circle, transparent 1%, #555555 1%) center/15000%;
 }
+
 .ripple:active {
     background-color: #777777;
     background-size: 100%;
