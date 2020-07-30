@@ -11,12 +11,15 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-
-@app.route('/HMIquery', methods=['POST'])
+@app.route('/HMIquery',methods=['POST','GET'])
 def handleHMIRequest():
 	level = request.form.get('HMIquery')
 	key = "c"*16	# tmp
 	return utils.AESEncrypt(str(level),key)
+
+@app.route('/genhashchain',methods=['POST','GET'])
+def genhashchain():
+	return utils.HashChainInit()
 
 if __name__ == '__main__':
     app.run(port=cm.PORT, debug=True)
