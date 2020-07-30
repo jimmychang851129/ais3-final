@@ -7,6 +7,22 @@ String.prototype.format = function () {
     return a;
 };
 
+function get_cookie(name) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(";");
+    for (var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == " ") c = c.substring(1, c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+}
+
+function change_water(per) {
+    $("#water").css("height", "{0}%".format(per.toString()));
+    $("#water_percentage").text(per);
+}
+
 // let str = "THIS_IS_SIMPLE_STRING";
 // let key = CryptoJS.enc.Utf8.parse("cccccccccccccccc");
 // let iv = "THIS_IS_IV";
@@ -51,6 +67,7 @@ $(function () {
             async: false,
             data: {
                 HMIquery: $("#input_bar").val(),
+                jwttoken: get_cookie("supersecretKey"),
             },
             success: function (data) {
                 console.log(data);
@@ -66,7 +83,12 @@ $(function () {
                 username: $("#input_username").val(),
             },
             success: function (data) {
-                $("#username").text(": {0}".format(data.username));
+                $("#username").text(
+                    ": {0}, Token : {1}".format(
+                        data.username,
+                        data.supersecretKey
+                    )
+                );
                 document.cookie = "cntDay={0}".format(data.cntDay);
                 document.cookie = "supersecretKey={0}".format(
                     data.supersecretKey
@@ -75,4 +97,14 @@ $(function () {
             },
         });
     });
+
+    var odometer = new Odometer({
+        el: $("#water_percentage")[0],
+        value: 10,
+        theme: "minimal",
+        duration: 200,
+    });
+    odometer.render();
+
+    change_water(50);
 });
