@@ -8,6 +8,7 @@
     <title>AIS3 2020 Final</title>
     <link rel="stylesheet" href="https://github.hubspot.com/odometer/themes/odometer-theme-minimal.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.2.3/animate.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css" />
     <link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }} />
 </head>
 
@@ -41,7 +42,7 @@
 
         <div class="title"><span>Water Level</span></div>
         <div class="container mb-1">
-            <input type="text" username="HMIquery" placeholder="Input New Water Level" />
+            <input id="water_level" type="text" username="HMIquery" placeholder="Input New Water Level" />
         </div>
 
         <div class="title"><span>Auth Token</span></div>
@@ -60,10 +61,15 @@
         </div>
     </section>
 
+    <div class="modal" id="modal">
+        <p>You are BAD guy!!</p>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.2.1.js"></script>
     <script src="https://github.hubspot.com/odometer/odometer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js"></script>
     <!-- <script src={{ url_for('static', filename='js/bubble.js') }}></script> -->
     <script src={{ url_for('static', filename='js/main.js') }}></script>
     <!-- <script src="main.js"></script> -->
