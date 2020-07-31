@@ -55,6 +55,15 @@ def writelog(data):
 		else:
 			fw.write(data+"\n")
 
+def writeToken(user,token):
+	with open(user+".json",'w') as fw:
+		json.dump(token,fw)
+
+def ReadToken(user):
+	output = 0
+	with open(user+".json",'r') as f:
+		output = json.load(f)
+	return output
 #####################
 # register new user #
 #####################
@@ -78,6 +87,7 @@ def HashChainInit(username):
 	sig = JWTToHmac(jwtToken)
 	jwtToken['sig'] = sig
 	print("jwtToken = ",jwtToken)
+	writeToken(username,jwtToken)
 	return jwtToken
 
 ####################
@@ -123,7 +133,27 @@ def authcheck(plaintext,sig,waterlevel):
 		print("Authentication sucess")
 		writelog("Authentication sucess")
 		writelog("%s\thashchainkey = %s\n"%(user,hashchainValue))
+		DeleteKey(user)
+		data = ReadToken(user)
+		data['cntDay'] += 1
+		writeToken(user,data)
 		return 1
 	print("Authentication failed")
 	print("%s -> %s"%(sigcheck,sig))
-	return 0		
+	return 0
+
+###################
+# keychain delete #
+###################
+def DeleteKey(user):
+	l = []
+	with open(cm.keychainfile,'r') as f:
+		for line in f:
+			if user not in line.split(',')[0]:
+				l.append(line.strip())
+			else:
+				l.append(','.join([x for x in line.split(',')[:-1]]))
+				writelog("Delete user %s key %s"%(user,line.split(',')[-1]))
+	with open(cm.keychainfile,'w') as fw:
+		for ele in l:
+			fw.write(ele+"\n")
