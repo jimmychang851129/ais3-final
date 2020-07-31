@@ -91,7 +91,8 @@ Command: web -> Auth
 	method: POST
 	param:
 		-	command: increase/decrease/report...
-		-	jwttoken: .....
+		-	jwttoken: input a random string s and compute hmac(s,username|2020-07-31-14)
+	hmac text is username append datetime(datetime format: '%Y-%m-%d-%H')
 	Response: ciphertext,IV
 }
 
