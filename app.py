@@ -13,10 +13,10 @@ def index():
 
 @app.route('/HMIquery',methods=['POST','GET'])
 def handleHMIRequest():
-	level = request.form.get('HMIquery')
+	waterlevel = request.form.get('HMIquery')
+	sig = request.form.get('jwttoken')
 	key = "c"*16	# tmp
 	return jsonify(utils.AESEncrypt(str(level), key))
-    # return utils.AESEncrypt(str(level), key)
 
 @app.route('/genhashchain',methods=['POST','GET'])
 def genhashchain():

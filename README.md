@@ -91,8 +91,7 @@ Command: web -> Auth
 	method: POST
 	param:
 		-	command: increase/decrease/report...
-		-	jwttoken: input a random string s and compute hmac(s,username|2020-07-31-14)
-	hmac text is username append datetime(datetime format: '%Y-%m-%d-%H')
+		-	jwttoken: sig(response from genhashchain)
 	Response: ciphertext,IV
 }
 
@@ -105,7 +104,16 @@ Generate HashChain: Web -> Auth
 	Simply a requests
 
 	Response: <jwt token in string format>
+
+	Sample response:
+	{
+		"username":"",
+		"supersecretKey":"",
+		"cntDay":0,
+		"sig":""
+	}
 }
+
 
 ```
 
