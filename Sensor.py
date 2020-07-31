@@ -6,7 +6,7 @@ waterlevel  = multiprocessing.Value("i",random.randint(1,100))
 command_list = ["inc", "dec", "rep","stop"]
 
 def msg(txt): # send back message
-    print(txt)
+    print(txt, flush=True)
 
 def err(index): # send error message
     error=["Wrong parameter format!","waterlevel achieved to maximum.","waterlevel achieved to minimum.","Unknown command!"]
@@ -25,7 +25,7 @@ def sminc(waterlevel,status,smincrv,smlimit):
             status.value = 0
             break
         waterlevel.value += 1
-        print(waterlevel.value)
+        msg(waterlevel.value)
         time.sleep(1)
     smincrv.value -= 1
 
@@ -35,7 +35,7 @@ def smdec(waterlevel,status,smdecrv,smlimit):
             status.value = 0
             break
         waterlevel.value -= 1
-        print(waterlevel.value)
+        msg(waterlevel.value)
         time.sleep(1)
     smdecrv.value -= 1
 
