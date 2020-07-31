@@ -1,10 +1,13 @@
+#!/usr/bin/env python3
+
 import modbusUtils
 import asyncio
 
 class PLC:
-    def __init__(self, host, port):
+    def __init__(self, host, port, sensorProgram):
         self.host = host
         self.port = port
+        self.sensorProgram = sensorProgram
         self.memory = [0 for i in range(524288)]
         self.PDUTranslationTable = {'coils' : 0,
                                     'discreteInput' : 65536,
@@ -44,6 +47,8 @@ class PLC:
         await server.serve_forever()
 
     async def control(self):
+        #sensor = await asyncio.create_subprocess_exec(self.sensorProgram, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+
         while True:
             expectedWaterLevel = self.holdingRegistersAddressMap[456789]
             currentWaterLevel = await self.queryWaterLevel()
@@ -126,8 +131,7 @@ class PLC:
         startingAddress = modbusUtils.bytes2int(data[0:2])
         quantityOfOutputs = modbusUtils.bytes2int(data[2:4])
         byteCount = modbusUtils.bytes2int(data[4:5])
-        outputValue = modbusUtils.decompressBools(await reader.read(byteCount))
-        outputValue.extend([0] * (quantityOfOutputs - len(outputValue)))
+        outputValue = modbusUtils.zeroPadOrTruncate(modbusUtils.decompressBools(await reader.read(byteCount)), quantityOfOutputs)
 
         offset = self.PDUTranslationTable['coils']
         self.memory[offset + startingAddress:offset + startingAddress + quantityOfOutputs] = outputValue
@@ -140,7 +144,7 @@ class PLC:
         quantityOfRegisters = modbusUtils.bytes2int(data[2:4])
         byteCount = modbusUtils.bytes2int(data[4:5])
         registersValue = await reader.read(byteCount)
-        registersValue = list(map(modbusUtils.bytes2int, (registersValue[i:i+2] for i in range(0, len(registersValue), 2))))
+        registersValue = list(map(modbusUtils.bytes2int, modbusUtils.splitIntoChunks(registersValue, 2)))
 
         offset = self.PDUTranslationTable['holdingRegisters']
         self.memory[offset + startingAddress:offset + startingAddress + quantityOfRegisters] = registersValue
@@ -160,5 +164,5 @@ class PLC:
         return 33
 
 if __name__ == '__main__':
-    plc = PLC('127.0.0.1', 4444)
+    plc = PLC('127.0.0.1', 4444, '/path/to/sensor')
     plc.start()
