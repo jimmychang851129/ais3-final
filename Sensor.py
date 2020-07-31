@@ -8,11 +8,9 @@ command_list = ["inc", "dec", "rep","stop"]
 def msg(txt): # send back message
     print(txt)
 
-ac = True # User Accessed or not from PLC
-
 ### waterlevel simulation
 
-status = multiprocessing.Value("i", 0) # 0=default, 1=stop, 2=stop only inc part, 3=stop only dec part
+status = multiprocessing.Value("i", 0) # 0=default, 1=stop, 2=only inc part stop, 3=only dec part stop
 smincrv = multiprocessing.Value("i", 0) # processing amount of inc sm
 smdecrv = multiprocessing.Value("i", 0) # processing amount of dec sm
 smlimit = multiprocessing.Value("i", 0) # sm limit for inc/dec
