@@ -46,18 +46,35 @@ class PLC:
         server = await asyncio.start_server(self.handleConnection, self.host, self.port)
         await server.serve_forever()
 
+    async def listenSensor(self, sensor):
+        while True:
+            currentWaterLevel = int((await sensor.stdout.readline()).decode())
+            self.memory[self.inputRegistersAddressMap[345678]] = currentWaterLevel
+
     async def control(self):
-        #sensor = await asyncio.create_subprocess_exec(self.sensorProgram, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        if isinstance(self.sensorProgram, str):
+            sensor = await asyncio.create_subprocess_exec(self.sensorProgram, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+        else:
+            sensor = await asyncio.create_subprocess_exec(*self.sensorProgram, stdin=asyncio.subprocess.PIPE, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+
+        listenSensor = asyncio.create_task(self.listenSensor(sensor))
 
         while True:
-            expectedWaterLevel = self.holdingRegistersAddressMap[456789]
-            currentWaterLevel = await self.queryWaterLevel()
-            self.inputRegistersAddressMap[345678] = currentWaterLevel
+            command = self.memory[self.holdingRegistersAddressMap[456789]]
 
-            if currentWaterLevel < expectedWaterLevel:
-                await self.increaseWaterLevel()
-            else:
-                await self.decreaseWaterLevel()
+            if command:
+                arg1 = self.memory[self.holdingRegistersAddressMap[456790]]
+                self.memory[self.holdingRegistersAddressMap[456789]] = 0
+                self.memory[self.holdingRegistersAddressMap[456790]] = 0
+
+                operations = {1 : 'inc',
+                              2 : f'inc {arg1}',
+                              3 : 'dec',
+                              4 : f'dec {arg1}',
+                              5 : 'stop',}
+
+                sensor.stdin.write((operations[command] + '\n').encode())
+                await sensor.stdin.drain()
 
             await asyncio.sleep(0.1)
 
@@ -151,18 +168,6 @@ class PLC:
 
         return data[0:4]
 
-    async def increaseWaterLevel(self):
-        'inc'
-        pass
-
-    async def decreaseWaterLevel(self):
-        'dec'
-        pass
-
-    async def queryWaterLevel(self):
-        'rep'
-        return 33
-
 if __name__ == '__main__':
-    plc = PLC('127.0.0.1', 4444, '/path/to/sensor')
+    plc = PLC('127.0.0.1', 4444, ['python3', 'Sensor.py'])
     plc.start()
