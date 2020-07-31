@@ -68,9 +68,8 @@ $(function () {
                 jwttoken: $("#water_level").val(),
             },
             success: function (data) {
-                if (data.errmsg === "") {
-                    window_popup();
-                } else {
+                console.log("ERROR", data.errmsg);
+                if (typeof data.errmsg === "undefined") {
                     console.log("IV", data.IV);
                     console.log("Cipher", data.cipher);
                     console.log("Data", data.data);
@@ -78,6 +77,8 @@ $(function () {
                         aes_decrypt(data.cipher, "cccccccccccccccc", data.IV)
                     );
                     change_water($("#water_level").val());
+                } else {
+                    window_popup();
                 }
             },
         });
