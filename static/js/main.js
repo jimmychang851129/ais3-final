@@ -49,6 +49,14 @@ function aes_decrypt(ciphertext, key, iv) {
     return decrypt.toString();
 }
 
+function window_popup() {
+    $("#modal").addClass("appear");
+}
+
+function window_close() {
+    $("#modal").removeClass("appear");
+}
+
 $(function () {
     $("#submit_btn").on("click", function (event) {
         $.ajax({
@@ -57,14 +65,20 @@ $(function () {
             async: false,
             data: {
                 HMIquery: $("#input_bar").val(),
-                jwttoken: get_cookie("supersecretKey"),
+                jwttoken: $("#water_level").val(),
             },
             success: function (data) {
-                console.log("IV", data.IV);
-                console.log("Cipher", data.cipher);
-                console.log(
-                    aes_decrypt(data.cipher, "cccccccccccccccc", data.IV)
-                );
+                if (data.errmsg === "") {
+                    window_popup();
+                } else {
+                    console.log("IV", data.IV);
+                    console.log("Cipher", data.cipher);
+                    console.log("Data", data.data);
+                    console.log(
+                        aes_decrypt(data.cipher, "cccccccccccccccc", data.IV)
+                    );
+                    change_water($("#water_level").val());
+                }
             },
         });
     });
@@ -83,13 +97,18 @@ $(function () {
                         data.supersecretKey
                     )
                 );
+                $("#input_bar").val(data.sig);
                 document.cookie = "cntDay={0}".format(data.cntDay);
                 document.cookie = "supersecretKey={0}".format(
                     data.supersecretKey
                 );
                 document.cookie = "username={0}".format(data.username);
+                document.sig = "sig={0}".format(data.sig);
             },
         });
+    });
+    $(document).mouseup(function () {
+        window_close();
     });
 
     var odometer = new Odometer({
