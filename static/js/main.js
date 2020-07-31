@@ -49,8 +49,9 @@ function aes_decrypt(ciphertext, key, iv) {
     return decrypt.toString();
 }
 
-function window_popup() {
+function window_popup(msg) {
     $("#modal").addClass("appear");
+    $("#modal_msg").text(msg);
 }
 
 function window_close() {
@@ -59,6 +60,15 @@ function window_close() {
 
 $(function () {
     $("#submit_btn").on("click", function (event) {
+        water_level = $("#water_level").val();
+        if (
+            isNaN(water_level) ||
+            parseInt(water_level, 10) > 100 ||
+            parseInt(water_level, 10) < 0
+        ) {
+            window_popup("Invalid input");
+            return;
+        }
         $.ajax({
             type: "POST",
             url: "/HMIquery",
@@ -73,12 +83,12 @@ $(function () {
                     console.log("IV", data.IV);
                     console.log("Cipher", data.cipher);
                     console.log("Data", data.data);
-                    console.log(
-                        aes_decrypt(data.cipher, "cccccccccccccccc", data.IV)
-                    );
+                    // console.log(
+                    //     aes_decrypt(data.cipher, "cccccccccccccccc", data.IV)
+                    // );
                     change_water($("#water_level").val());
                 } else {
-                    window_popup();
+                    window_popup("You are BAD guy!!");
                 }
             },
         });
