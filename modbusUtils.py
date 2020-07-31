@@ -36,8 +36,8 @@ def modbusSetup(host: str, port: int) -> socket.socket:
 def modbusClose(sock: socket.socket) -> None:
     sock.close()
 
-def modbusSend(sock: socket.socket, functionCode: int, dataRequest: bytes) -> None:
-    sock.sendall(assemblePDU(functionCode, dataRequest))
+def modbusSend(sock: socket.socket, data: bytes) -> None:
+    sock.sendall(data)
 
 def modbusRecv(sock: socket.socket) -> bytes:
     functionCode = sock.recv(1)
@@ -55,33 +55,33 @@ def assemblePDU(functionCode: int, dataRequest: bytes) -> bytes:
 Modbus Commands
 '''
 
-def readCoils(sock: socket.socket, startingAddress: int, quantityOfCoils : int) -> None:
-    modbusSend(sock, 1, int2bytes(startingAddress, 2) + int2bytes(quantityOfCoils, 2))
+def makeReadCoilsRequest(startingAddress: int, quantityOfCoils : int) -> bytes:
+    return assemblePDU(1, int2bytes(startingAddress, 2) + int2bytes(quantityOfCoils, 2))
 
-def readDiscreteInputs(sock: socket.socket, startingAddress: int, quantityOfInputs: int) -> None:
-    modbusSend(sock, 2, int2bytes(startingAddress, 2) + int2bytes(quantityOfInputs, 2))
+def makeReadDiscreteInputsRequest(startingAddress: int, quantityOfInputs: int) -> bytes:
+    return assemblePDU(2, int2bytes(startingAddress, 2) + int2bytes(quantityOfInputs, 2))
 
-def readHoldingRegisters(sock: socket.socket, startingAddress: int, quantityOfRegisters: int) -> None:
-    modbusSend(sock, 3, int2bytes(startingAddress, 2) + int2bytes(quantityOfRegisters, 2))
+def makeReadHoldingRegistersRequest(startingAddress: int, quantityOfRegisters: int) -> bytes:
+    return assemblePDU(3, int2bytes(startingAddress, 2) + int2bytes(quantityOfRegisters, 2))
 
-def readInputRegisters(sock: socket.socket, startingAddress: int, quantityOfInputRegisters: int) -> None:
-    modbusSend(sock, 4, int2bytes(startingAddress, 2) + int2bytes(quantityOfInputRegisters, 2))
+def makeReadInputRegistersRequest(startingAddress: int, quantityOfInputRegisters: int) -> bytes:
+    return assemblePDU(4, int2bytes(startingAddress, 2) + int2bytes(quantityOfInputRegisters, 2))
 
-def writeSingleCoil(sock: socket.socket, outputAddress: int, outputValue: int) -> None:
+def makeWriteSingleCoilRequest(outputAddress: int, outputValue: int) -> bytes:
     outputValue = 0xFF00 if outputValue else 0x0000
-    modbusSend(sock, 5, int2bytes(outputAddress, 2) + int2bytes(outputValue, 2))
+    return assemblePDU(5, int2bytes(outputAddress, 2) + int2bytes(outputValue, 2))
 
-def writeSingleRegister(sock: socket.socket, registerAddress: int, registerValue : int) -> None:
-    modbusSend(sock, 6, int2bytes(registerAddress, 2) + int2bytes(registerValue, 2))
+def makeWriteSingleRegisterRequest(registerAddress: int, registerValue : int) -> bytes:
+    return assemblePDU(6, int2bytes(registerAddress, 2) + int2bytes(registerValue, 2))
 
-def writeMultipleCoils(sock: socket.socket, startingAddress: int, outputValue: List[int]) -> None:
+def makeWriteMultipleCoilsRequest(startingAddress: int, outputValue: List[int]) -> bytes:
     quantityOfOutputs = len(outputValue)
     compressedOutputValue = compressBools(outputValue)
-    modbusSend(sock, 15, int2bytes(startingAddress, 2) + int2bytes(quantityOfOutputs, 2) + int2bytes(len(compressedOutputValue)) + compressedOutputValue)
+    return assemblePDU(15, int2bytes(startingAddress, 2) + int2bytes(quantityOfOutputs, 2) + int2bytes(len(compressedOutputValue)) + compressedOutputValue)
 
-def writeMultipleRegisters(sock: socket.socket, startingAddress: int, registersValue: List[int]) -> None:
+def makeWriteMultipleRegistersRequest(startingAddress: int, registersValue: List[int]) -> bytes:
     quantityOfRegisters = len(registersValue)
-    modbusSend(sock, 16, int2bytes(startingAddress, 2) + int2bytes(quantityOfRegisters, 2) + int2bytes(quantityOfRegisters * 2) + b''.join(map(lambda x : x.to_bytes(2, 'big'), registersValue)))
+    return assemblePDU(16, int2bytes(startingAddress, 2) + int2bytes(quantityOfRegisters, 2) + int2bytes(quantityOfRegisters * 2) + b''.join(map(lambda x : x.to_bytes(2, 'big'), registersValue)))
 
 '''
 Modbus Response Parsing Functions
