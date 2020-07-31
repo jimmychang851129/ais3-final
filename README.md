@@ -92,7 +92,10 @@ Command: web -> Auth
 	param:
 		-	command: increase/decrease/report...
 		-	jwttoken: sig(response from genhashchain)
-	Response: ciphertext,IV
+	Response:  {
+		errmsg:"",	# non empty if auth failed
+		data:"",	# data from sensor
+	}
 }
 
 Generate HashChain: Web -> Auth
