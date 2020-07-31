@@ -4,6 +4,14 @@ from Crypto.Cipher import AES
 from Crypto.Hash import SHA256, HMAC
 import math, json, datetime
 
+############
+# hmac sig #
+############
+def hmacSig(key,msg):
+	h = HMAC.new(key)	#signature
+	h.update(msg.encode())
+	return h.hexdigest()
+
 #################################
 # aes with CBC mod of operation #
 #################################
@@ -72,27 +80,6 @@ def HashChainInit(username):
 	print("jwtToken = ",jwtToken)
 	return jwtToken
 
-#######################
-# user authentication #
-#######################
-# need modify(hmac validation)
-# given jwt token, validate if it contains correct hash chain value
-# return 0 if false 1 if true
-def HashChainValidation(jwttoken):
-	hashchainValue = 0
-	with open(keychainfile,'r') as f:
-		for line in f:
-			if jwtToken['username'] in line:
-				hashchainValue = line.strip().split(',')[-1]	# only retrieve the last value in hashchain
-	if hashchainValue == 0:	# jwttoken error username not found
-		print("[utils.py]HashChainValidation error, jwttoken user not found")
-		return 0
-	if jwttoken['hashChainVal'] == hashchainValue:
-		return 1
-	print("[utils.py]HashChainValidation error, jwttoken hashchain value error")
-	print("%s -> %s"%(jwttoken['hashChainVal'],hashchainValue))
-	return 0
-
 ####################
 # staffjwt to hmac #
 ####################
@@ -112,6 +99,31 @@ def JWTToHmac(staffjwt):
 		key = hashf.hexdigest().encode()
 	print("final key = ",key)
 	text = staffjwt['username'] + datetime.datetime.now().strftime('%Y-%m-%d-%H')
-	h = HMAC.new(key)	#signature
-	h.update(text.encode())
-	return text+','+h.hexdigest()
+	return text+','+hmacSig(key,text)
+
+#######################
+# user authentication #
+#######################
+# return 0 if false 1 if true
+def authcheck(plaintext,sig,waterlevel):
+	print("ininin")
+	user,timestamp = plaintext[:plaintext.index('2')],plaintext[plaintext.index('2'):]
+	hashchainValue = 0
+	with open(cm.keychainfile,'r') as f:
+		for line in f:
+			if user in line:
+				hashchainValue = line.strip().split(',')[-1]	# only retrieve the last value in hashchain
+	if hashchainValue == 0:	# jwttoken error username not found
+		print("[utils.py]authcheck error, jwttoken user not found")
+		return 0
+	msgtext = user + datetime.datetime.now().strftime('%Y-%m-%d-%H')
+	sigcheck = hmacSig(hashchainValue.encode(),msgtext)
+	print("sig = ",sigcheck,sig)
+	if sigcheck == sig:
+		print("Authentication sucess")
+		writelog("Authentication sucess")
+		writelog("%s\thashchainkey = %s\n"%(user,hashchainValue))
+		return 1
+	print("Authentication failed")
+	print("%s -> %s"%(sigcheck,sig))
+	return 0		
