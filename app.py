@@ -28,8 +28,8 @@ def handleHMIRequest():
 	else:
 		modbusUtils.modbusSend(sock, modbusUtils.makeWriteSingleRegisterRequest(cm.memLoc, waterlevel))
 		response = modbusUtils.parseWriteSingleRegisterResponse(modbusUtils.modbusRecv(sock))
-		modbusUtils.modbusSend(sock, modbusUtils.makeReadInputRegistersRequest(cm.revmemLoc, 1))
-		response = modbusUtils.parseReadInputRegistersResponse(modbusUtils.modbusRecv(sock))
+		# modbusUtils.modbusSend(sock, modbusUtils.makeReadInputRegistersRequest(cm.revmemLoc, 1))
+		# response = modbusUtils.parseReadInputRegistersResponse(modbusUtils.modbusRecv(sock))
 	return jsonify(utils.AESEncrypt(str(waterlevel), key))
 
 @app.route('/genhashchain',methods=['POST','GET'])
