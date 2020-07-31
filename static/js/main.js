@@ -23,41 +23,31 @@ function change_water(per) {
     $("#water_percentage").text(per);
 }
 
-// let str = "THIS_IS_SIMPLE_STRING";
-// let key = CryptoJS.enc.Utf8.parse("cccccccccccccccc");
-// let iv = "THIS_IS_IV";
-
-function hex2a(hexx) {
-    var hex = hexx.toString(); //force conversion
-    var str = "";
-    for (var i = 0; i < hex.length && hex.substr(i, 2) !== "00"; i += 2)
-        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
-    return str;
+function aes_encrypt(plaintext, key, iv) {
+    key = CryptoJS.enc.Utf8.parse(key);
+    iv = CryptoJS.enc.Utf8.parse(iv);
+    let srcs = CryptoJS.enc.Utf8.parse(plaintext);
+    let encrypted = CryptoJS.AES.encrypt(srcs, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+    });
+    return encrypted.ciphertext.toString();
 }
 
-// function AES_Decrypt(word, iv) {
-//     console.log("word->" + word);
-//     //如果加密返回的base64Str
-//     var srcs = hex2a(word);
-//     iv = hex2a(iv);
-//     //若上面加密返回的hexStr,需打开下面两行注释，再次处理
-//     //var encryptedHexStr = fun_aes.CryptoJS.enc.Hex.parse(word);
-//     var srcs = CryptoJS.enc.Base64.stringify(hex2a(word));
-//     var decrypt = CryptoJS.AES.decrypt(srcs, key, {
-//         iv: iv,
-//         mode: CryptoJS.mode.CBC,
-//         padding: CryptoJS.pad.Pkcs7,
-//     });
-//     var decryptedStr = decrypt.toString(CryptoJS.enc.Utf8);
-//     var value = decryptedStr.toString();
-//     console.log("value->" + value);
-//     return value;
-// }
-
-// AES_Decrypt(
-//     "d34320620546b2c1789e378fe020fd36",
-//     "0810cb80837ba5eabc78c6b52cc3f1df"
-// );
+function aes_decrypt(ciphertext, key, iv) {
+    key = CryptoJS.enc.Utf8.parse(key);
+    iv = CryptoJS.enc.Utf8.parse(iv);
+    let hex_string = CryptoJS.enc.Hex.parse(ciphertext);
+    let srcs = CryptoJS.enc.Base64.stringify(hex_string);
+    let decrypt = CryptoJS.AES.decrypt(srcs, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.Pkcs7,
+    });
+    decrypt = decrypt.toString(CryptoJS.enc.Utf8);
+    return decrypt.toString();
+}
 
 $(function () {
     $("#submit_btn").on("click", function (event) {
@@ -70,7 +60,11 @@ $(function () {
                 jwttoken: get_cookie("supersecretKey"),
             },
             success: function (data) {
-                console.log(data);
+                console.log("IV", data.IV);
+                console.log("Cipher", data.cipher);
+                console.log(
+                    aes_decrypt(data.cipher, "cccccccccccccccc", data.IV)
+                );
             },
         });
     });
@@ -108,3 +102,13 @@ $(function () {
 
     change_water(50);
 });
+
+// let plaintext = "SOMETHING_SUPER_SECRET";
+// let key = "cccccccccccccccc";
+// let iv = "THIS_IS_COOL_IV!!";
+
+// let ciphertext = aes_encrypt(plaintext, key, iv);
+// console.log("ciphertext", ciphertext);
+
+// plaintext = aes_decrypt(ciphertext, key, iv);
+// console.log("plaintext", plaintext);
