@@ -116,7 +116,6 @@ def JWTToHmac(staffjwt):
 #######################
 # return 0 if false 1 if true
 def authcheck(plaintext,sig,waterlevel):
-	print("ininin")
 	user,timestamp = plaintext[:plaintext.index('2')],plaintext[plaintext.index('2'):]
 	hashchainValue = 0
 	with open(cm.keychainfile,'r') as f:
