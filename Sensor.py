@@ -8,6 +8,10 @@ command_list = ["inc", "dec", "rep","stop"]
 def msg(txt): # send back message
     print(txt)
 
+def err(index): # send error message
+    error=["Wrong parameter format!","waterlevel achieved to maximum.","waterlevel achieved to minimum.","Unknown command!"]
+    #print(error[index])
+
 ### waterlevel simulation
 
 status = multiprocessing.Value("i", 0) # 0=default, 1=stop, 2=only inc part stop, 3=only dec part stop
@@ -38,7 +42,7 @@ def smdec(waterlevel,status,smdecrv,smlimit):
 ###
 
 if __name__ == '__main__':
-
+    msg(waterlevel.value)
     while True:
         pinc = multiprocessing.Process(name='pinc',target=sminc,args=(waterlevel,status,smincrv,smlimit,))
         pdec = multiprocessing.Process(name='pdec',target=smdec,args=(waterlevel,status,smdecrv,smlimit,))
@@ -49,7 +53,8 @@ if __name__ == '__main__':
 
         if submit[0] == command_list[0]:  #inc
             if len(submit) > 2 :
-                msg("Wrong parameter format!")
+                #msg("Wrong parameter format!")
+                err(0)
             elif len(submit) == 1:
                 if smincrv.value == 0:
                     smincrv.value += 1
@@ -57,7 +62,8 @@ if __name__ == '__main__':
                     smlimit.value = 100
                     pinc.start()
             elif not (submit[1].isnumeric()):
-                msg("Wrong parameter format!")
+                #msg("Wrong parameter format!")
+                err(0)
             else:
                 if waterlevel.value+int(submit[1]) <= 100:
                     if smincrv.value == 0:
@@ -67,10 +73,12 @@ if __name__ == '__main__':
                         smlimit.value += int(submit[1])
                         pinc.start()                    
                 else:
-                    msg("waterlevel achieved to maximum.")
+                    #msg("waterlevel achieved to maximum.")
+                    err(1)
         elif submit[0] == command_list[1]:  #dec
             if len(submit) > 2 :
-                msg("Wrong parameter format!")
+                #msg("Wrong parameter format!")
+                err(0)
             elif len(submit) == 1:
                 if smdecrv.value == 0:
                     smdecrv.value += 1
@@ -78,7 +86,8 @@ if __name__ == '__main__':
                     smlimit.value = 0
                     pdec.start()
             elif not (submit[1].isnumeric()):
-                msg("Wrong parameter format!")
+                #msg("Wrong parameter format!")
+                err(0)
             else:
                 if waterlevel.value-int(submit[1]) >= 0:
                     if smdecrv.value == 0:
@@ -88,19 +97,21 @@ if __name__ == '__main__':
                         smlimit.value -= int(submit[1])
                         pdec.start() 
                 else:
-                    msg("waterlevel achieved to minimum.")
-        elif submit[0] == command_list[2]:  #rep
-            msg(waterlevel.value)
+                    #msg("waterlevel achieved to minimum.")
+                    err(2)
+        #elif submit[0] == command_list[2]:  #rep
+            #msg(waterlevel.value)
         elif submit[0] == command_list[3]: # stop
             if (smincrv.value == 1) or (smdecrv.value == 1):
                 status.value = 1
         else:
-            msg("Unknown command!")
+            #msg("Unknown command!")
+            err(3)
 
 # command list:
 # inc		-increase waterlevel to maximum
 # inc <value>	-increase waterlevel by value
 # dec		-decrease waterlevel to minimum
 # dec <value>	-decrease waterlevel by value
+# rep		-report current waterlevel (removed)
 # stop		-stop increasing or decreasing
-# rep		-report current waterlevel
