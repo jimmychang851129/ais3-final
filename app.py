@@ -1,11 +1,12 @@
 from flask import Flask, render_template, flash, redirect, url_for, jsonify
 import os
 from flask import request
-import utils
+import utils, modbusUtils
 import Config as cm
 
 app = Flask(__name__)
 
+sock = modbusUtils.modbusSetup(cm.host,cm.PLCport)
 
 @app.route('/')
 def index():
@@ -13,7 +14,7 @@ def index():
 
 @app.route('/HMIquery',methods=['POST','GET'])
 def handleHMIRequest():
-	waterlevel = request.form.get('jwttoken')
+	waterlevel = int(request.form.get('jwttoken'))
 	plaintext,sig = request.form.get('HMIquery').split(',')
 	print("request = ",plaintext,sig,waterlevel)
 	key = "c"*16	# tmp
@@ -24,6 +25,11 @@ def handleHMIRequest():
 	if utils.authcheck(plaintext,sig,waterlevel) == 0:
 		res['errmsg'] = "Authentication failed"
 		return res
+	else:
+		modbusUtils.modbusSend(sock, modbusUtils.makeWriteSingleRegisterRequest(cm.memLoc, waterlevel))
+		response = modbusUtils.parseWriteSingleRegisterResponse(modbusUtils.modbusRecv(sock))
+		modbusUtils.modbusSend(sock, modbusUtils.makeReadInputRegistersRequest(cm.revmemLoc, 1))
+		response = modbusUtils.parseReadInputRegistersResponse(modbusUtils.modbusRecv(sock))
 	return jsonify(utils.AESEncrypt(str(waterlevel), key))
 
 @app.route('/genhashchain',methods=['POST','GET'])

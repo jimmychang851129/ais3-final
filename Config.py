@@ -1,5 +1,10 @@
 import os
 
+host = "127.0.0.1"
+PLCport = 4444
+memLoc = 1234
+revmemLoc = 5555
+
 Basedir = ""
 AESKeyLength = 128
 logfile = os.path.join(Basedir,"log.txt")
