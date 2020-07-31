@@ -2,7 +2,7 @@ import socket,os
 import Config as cm
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA256, HMAC
-import math,json
+import math, json, datetime
 
 #################################
 # aes with CBC mod of operation #
@@ -52,20 +52,24 @@ def writelog(data):
 #####################
 # for demonstration, we implement it online
 def HashChainInit(username):
-	key = os.urandom(cm.hashkeyLength)
+	key = os.urandom(cm.hashkeyLength).hex()
 	l = []
 	jwtToken = dict(cm.staffjwtFormat)
 	jwtToken['username'] = username
-	jwtToken['supersecretKey'] = key.hex()
-	hashf = SHA256.new()
+	jwtToken['supersecretKey'] = key
 	for i in range(cm.hashchainLength):
-		hashf.update(key)
+		hashf = SHA256.new()
+		hashf.update(key.encode())
 		l.append(hashf.hexdigest())
+		key = hashf.hexdigest()
 	result = ','.join([x for x in l])
 	with open(cm.keychainfile,'a+') as fw:
 		fw.write(username+','+result+"\n")
 	writelog("%s register success"%(username))
 	writelog("jwt token: %s"%(json.dumps(jwtToken)))
+	sig = JWTToHmac(jwtToken)
+	jwtToken['sig'] = sig
+	print("jwtToken = ",jwtToken)
 	return jwtToken
 
 #######################
@@ -106,8 +110,8 @@ def JWTToHmac(staffjwt):
 		hashf = SHA256.new()
 		hashf.update(key)
 		key = hashf.hexdigest().encode()
-		print("key = ",key)
+	print("final key = ",key)
 	text = staffjwt['username'] + datetime.datetime.now().strftime('%Y-%m-%d-%H')
 	h = HMAC.new(key)	#signature
 	h.update(text.encode())
-	return h.hexdigest()
+	return text+','+h.hexdigest()
