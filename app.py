@@ -24,12 +24,15 @@ def handleHMIRequest():
 	}
 	if utils.authcheck(plaintext,sig,waterlevel) == 0:
 		res['errmsg'] = "Authentication failed"
+		utils.writelog("Authentication failed: %s"%(plaintext))
 		return res
 	else:
 		modbusUtils.modbusSend(sock, modbusUtils.makeWriteSingleRegisterRequest(cm.memLoc, waterlevel))
 		response = modbusUtils.parseWriteSingleRegisterResponse(modbusUtils.modbusRecv(sock))
-		# modbusUtils.modbusSend(sock, modbusUtils.makeReadInputRegistersRequest(cm.revmemLoc, 1))
-		# response = modbusUtils.parseReadInputRegistersResponse(modbusUtils.modbusRecv(sock))
+		print("request response = ",response)
+		modbusUtils.modbusSend(sock, modbusUtils.makeReadInputRegistersRequest(cm.revmemLoc, 1))
+		response = modbusUtils.parseReadInputRegistersResponse(modbusUtils.modbusRecv(sock))
+		print("response response = ",response)
 	return jsonify(utils.AESEncrypt(str(waterlevel), key))
 
 @app.route('/genhashchain',methods=['POST','GET'])

@@ -1,4 +1,7 @@
-/*.json
-/*.txt
-__pycache__
 .DS_Store
+venv/
+*.pyc
+__pycache__/
+keychain.txt
+log.txt
+*.json
