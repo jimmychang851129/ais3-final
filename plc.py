@@ -2,6 +2,7 @@
 
 import modbusUtils
 import asyncio
+import Config
 
 class PLC:
     def __init__(self, host, port, sensorProgram):
@@ -49,7 +50,7 @@ class PLC:
     async def listenSensor(self, sensor):
         while True:
             currentWaterLevel = int((await sensor.stdout.readline()).decode())
-            self.memory[self.inputRegistersAddressMap[345678]] = currentWaterLevel
+            self.memory[self.PDUTranslationTable['inputRegisters'] + Config.revmemLoc] = currentWaterLevel
 
     async def control(self):
         if isinstance(self.sensorProgram, str):
@@ -59,22 +60,15 @@ class PLC:
 
         listenSensor = asyncio.create_task(self.listenSensor(sensor))
 
+        lastTargetWaterLevel = self.memory[self.PDUTranslationTable['holdingRegisters'] + Config.memLoc]
+
         while True:
-            command = self.memory[self.holdingRegistersAddressMap[456789]]
-
-            if command:
-                arg1 = self.memory[self.holdingRegistersAddressMap[456790]]
-                self.memory[self.holdingRegistersAddressMap[456789]] = 0
-                self.memory[self.holdingRegistersAddressMap[456790]] = 0
-
-                operations = {1 : 'inc',
-                              2 : f'inc {arg1}',
-                              3 : 'dec',
-                              4 : f'dec {arg1}',
-                              5 : 'stop',}
-
-                sensor.stdin.write((operations[command] + '\n').encode())
+            targetWaterLevel = self.memory[self.PDUTranslationTable['holdingRegisters'] + Config.memLoc]
+            if targetWaterLevel != lastTargetWaterLevel:
+                sensor.stdin.write((str(targetWaterLevel) + '\n').encode())
                 await sensor.stdin.drain()
+
+                lastTargetWaterLevel = targetWaterLevel
 
             await asyncio.sleep(0.1)
 
@@ -169,5 +163,5 @@ class PLC:
         return data[0:4]
 
 if __name__ == '__main__':
-    plc = PLC('127.0.0.1', 4444, ['python3', 'Sensor.py'])
+    plc = PLC('127.0.0.1', 4444, ['python3', 'Sensor2.py'])
     plc.start()
