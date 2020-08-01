@@ -122,5 +122,5 @@ Generate HashChain: Web -> Auth
 
 ## links
 
-[hackmd notes](https://hackmd.io/d_7YG7d2Tl6sjiXiLwNESQ)
-[ppt]
+[hackmd notes](https://hackmd.io/d_7YG7d2Tl6sjiXiLwNESQ)<br />
+[ppt](https://docs.google.com/presentation/d/1xjWePPTT8RI75v_10y5_zqGfh5vEIbSB/edit#slide=id.g8ee1742961_0_646)
