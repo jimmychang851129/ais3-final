@@ -12,6 +12,7 @@ For example, an attacker can easily retrieve all possible information of the OT 
 
 1. one-wayness and weak collision resistence of cryptographic hash function
 2. the origin key of hashchain is randomly generated and not known to anyone
+3. Auth server serve minimum functions and is assumed to be save
 
 ### Details
 
@@ -54,9 +55,10 @@ occupy port: 5000
 
 ### Auth
 
-- AES encrypt/decrypt
+- AES encrypt/decrypt(CBC mode)
 - jwt token, hashchain generation
 - jwt token, hashchain validation
+- command whitelist
 
 ### PLC
 
@@ -76,16 +78,45 @@ occupy port: 5000
 #### Web & Auth
 
 ```
-web -> Auth
+format:
+
+Request: <action of the request>
+param: param to backend
+	- <param name>: param value
+Response: response msg format
+
+Command: web -> Auth
 {
-	command: increase/decrease/report...
-	jwt token: .....
+	Request: /HMIquery
+	method: POST
+	param:
+		-	command: increase/decrease/report...
+		-	jwttoken: sig(response from genhashchain)
+	Response:  {
+		errmsg:"",	# non empty if auth failed
+		data:"",	# data from sensor
+	}
 }
 
-Auth -> Web
+Generate HashChain: Web -> Auth
 {
-	msg: encrypted msg,IV
+	Request: /genhashchain
+	method: POST
+	param:
+		- username: <username>
+	Simply a requests
+
+	Response: <jwt token in string format>
+
+	Sample response:
+	{
+		"username":"",
+		"supersecretKey":"",
+		"cntDay":0,
+		"sig":""
+	}
 }
+
 
 ```
 
